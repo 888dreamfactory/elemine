@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나는 어떤 원소일까? — 원소 성격 유형 테스트</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#f5f4ef;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px}
+.container{width:100%;max-width:560px}
+.header{text-align:center;padding:32px 0 28px}
+.header-icon{font-size:48px;margin-bottom:8px}
+.header-title{font-size:22px;font-weight:600;color:#1a1a1a;margin-bottom:6px}
+.header-sub{font-size:14px;color:#888;line-height:1.6}
+.card{background:#fff;border-radius:16px;padding:28px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.progress-wrap{margin-bottom:20px}
+.progress-bar-bg{height:4px;background:#f0ede8;border-radius:2px;margin-bottom:8px}
+.progress-bar-fill{height:4px;border-radius:2px;background:#1D9E75;transition:width 0.4s ease}
+.progress-text{font-size:12px;color:#aaa;text-align:right}
+.dim-label{font-size:11px;color:#aaa;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:6px;font-weight:500}
+.dim-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:20px}
+.dim-chip{font-size:10px;padding:3px 8px;border-radius:10px;background:#f5f4ef;color:#bbb;border:1px solid #eee}
+.dim-chip.done{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5}
+.dim-chip.active{background:#EEEDFE;color:#534AB7;border-color:#AFA9EC}
+.q-num{font-size:12px;color:#bbb;margin-bottom:6px}
+.q-text{font-size:17px;font-weight:600;color:#1a1a1a;line-height:1.55;margin-bottom:20px}
+.choice{display:block;width:100%;text-align:left;padding:14px 18px;border-radius:12px;border:1.5px solid #eee;background:#fff;cursor:pointer;font-size:14px;color:#333;line-height:1.55;margin-bottom:10px;transition:all 0.15s;font-family:inherit}
+.choice:hover{background:#f8f7f4;border-color:#ccc}
+.choice:active{transform:scale(0.99)}
+.opt-label{display:block;font-size:10px;color:#bbb;font-weight:600;letter-spacing:0.05em;margin-bottom:2px}
+.result-header{text-align:center;padding:8px 0 20px}
+.result-sym{font-size:72px;font-weight:700;line-height:1;margin-bottom:4px}
+.result-num{font-size:12px;color:#bbb;margin-bottom:6px}
+.result-name{font-size:24px;font-weight:600;color:#1a1a1a;margin-bottom:3px}
+.result-eng{font-size:13px;color:#aaa;margin-bottom:14px}
+.cat-badge{display:inline-block;font-size:11px;padding:4px 14px;border-radius:20px;font-weight:500;margin-bottom:18px}
+.result-tagline{font-size:14px;color:#666;font-style:italic;padding:14px 16px;background:#f8f7f4;border-radius:10px;line-height:1.7;margin-bottom:18px}
+.result-desc{font-size:14px;color:#444;line-height:1.8;margin-bottom:20px}
+.section-title{font-size:11px;color:#aaa;letter-spacing:0.07em;text-transform:uppercase;font-weight:500;margin-bottom:10px}
+.sw-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.sw-box{background:#f8f7f4;border-radius:10px;padding:12px 14px}
+.sw-label{font-size:11px;color:#aaa;margin-bottom:4px}
+.sw-val{font-size:13px;font-weight:500;color:#333}
+.bar-wrap{margin-bottom:8px}
+.bar-label-row{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:4px}
+.bar-bg{height:6px;background:#f0ede8;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.tag{font-size:12px;padding:5px 12px;border-radius:20px;background:#f5f4ef;color:#666;border:1px solid #eee}
+.compat-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.compat-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:#f8f7f4;border-radius:10px;padding:10px 16px}
+.compat-sym{font-size:20px;font-weight:600}
+.compat-name{font-size:10px;color:#aaa}
+.retry-btn{display:block;width:100%;padding:14px;border-radius:12px;border:1.5px solid #eee;background:#f8f7f4;cursor:pointer;font-size:14px;color:#888;margin-top:4px;font-family:inherit;transition:all 0.15s}
+.retry-btn:hover{background:#f0ede8;color:#555}
+.share-hint{text-align:center;font-size:12px;color:#bbb;margin-top:16px;line-height:1.6}
+.footer{text-align:center;font-size:12px;color:#ccc;padding:20px 0 8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-icon">⚛</div>
+    <div class="header-title">나는 어떤 원소일까?</div>
+    <div class="header-sub">35개의 질문으로 알아보는 나의 원소 성격 유형<br>A 또는 B를 선택해주세요</div>
+  </div>
+  <div class="card" id="app"></div>
+  <div class="footer">원소 성격 유형 테스트 v1.1 — 오류 수정판</div>
+</div>
+<script>
+const DIMS=['반응성','안정성','결합성','에너지방향','희소성','전도성','경도'];
+const DIM_DESC=['자극에 얼마나 빠르게 반응하는가','외부 환경에 얼마나 흔들리지 않는가','혼자 vs 함께 중 어디서 더 강해지는가','에너지를 안으로 저장 vs 밖으로 발산','대중적이고 싶은가 vs 독창적이고 싶은가','감정과 에너지를 얼마나 잘 전달하는가','원칙 고수 vs 유연하게 변화하는가'];
+
+function ms(d,v){const s=[0,0,0,0,0,0,0];s[d]=v;return s;}
+
+const QS=[
+  {dim:0,q:"갑작스러운 변화나 초대에",a:{t:"즉시 긍정적으로 반응한다",s:ms(0,2)},b:{t:"상황 파악 후 천천히 결정한다",s:ms(0,0)}},
+  {dim:0,q:"처음 만나는 사람 앞에서",a:{t:"먼저 다가가 말을 건다",s:ms(0,2)},b:{t:"상대가 먼저 대화를 시작하길 기다린다",s:ms(0,0)}},
+  {dim:0,q:"흥미로운 아이디어를 보면",a:{t:"즉시 실행하고 싶어진다",s:ms(0,2)},b:{t:"충분히 검토한 후 움직인다",s:ms(0,0)}},
+  {dim:0,q:"누군가 나를 비판했을 때",a:{t:"즉각적으로 감정이 올라온다",s:ms(0,2)},b:{t:"차분하게 받아들이고 돌아본다",s:ms(0,0)}},
+  {dim:0,q:"예상치 못한 일이 생기면",a:{t:"빠르게 적응하며 흥미롭다고 느낀다",s:ms(0,2)},b:{t:"원래 계획을 유지하려 한다",s:ms(0,0)}},
+  {dim:1,q:"내 루틴과 가치관은",a:{t:"오랫동안 크게 변하지 않았다",s:ms(1,2)},b:{t:"상황에 따라 자주 바뀐다",s:ms(1,0)}},
+  {dim:1,q:"주변이 반대해도",a:{t:"스스로의 판단을 신뢰한다",s:ms(1,2)},b:{t:"다수 의견에 귀를 기울인다",s:ms(1,0)}},
+  {dim:1,q:"감정이 흔들리는 상황에서",a:{t:"감정을 누르고 논리적으로 행동한다",s:ms(1,2)},b:{t:"감정을 그대로 표현하고 흘려보낸다",s:ms(1,0)}},
+  {dim:1,q:"스트레스를 받을 때 나는",a:{t:"혼자 조용히 해결하려 한다",s:ms(1,2)},b:{t:"이야기를 나누며 해소한다",s:ms(1,0)}},
+  {dim:1,q:"10년 전과 지금 나는",a:{t:"크게 변하지 않았다",s:ms(1,2)},b:{t:"많이 달라졌다",s:ms(1,0)}},
+  {dim:2,q:"일할 때 나는",a:{t:"함께할 때 더 잘 된다",s:ms(2,2)},b:{t:"혼자일 때 더 집중된다",s:ms(2,0)}},
+  {dim:2,q:"좋은 결과를 냈을 때",a:{t:"팀 덕분이라고 진심으로 생각한다",s:ms(2,2)},b:{t:"내 노력의 결과라고 생각한다",s:ms(2,0)}},
+  {dim:2,q:"새 프로젝트를 시작할 때",a:{t:"믿을 수 있는 파트너가 있어야 안심된다",s:ms(2,2)},b:{t:"혼자 시작하는 게 더 편하다",s:ms(2,0)}},
+  {dim:2,q:"가장 행복한 순간은",a:{t:"사람들과 함께할 때",s:ms(2,2)},b:{t:"혼자 몰입할 때",s:ms(2,0)}},
+  {dim:2,q:"의견 충돌이 생겼을 때",a:{t:"조율하고 합의점을 찾는다",s:ms(2,2)},b:{t:"내 입장을 명확히 밝힌다",s:ms(2,0)}},
+  {dim:3,q:"에너지를 충전하는 방식은",a:{t:"사람들을 만나고 활동하며 충전한다",s:ms(3,2)},b:{t:"혼자 조용히 쉬며 충전한다",s:ms(3,0)}},
+  {dim:3,q:"감정 표현 방식은",a:{t:"바깥으로 잘 드러내는 편이다",s:ms(3,2)},b:{t:"안으로 삭이는 편이다",s:ms(3,0)}},
+  {dim:3,q:"목표를 향해 달릴 때",a:{t:"넘치는 에너지가 주변에도 전해진다",s:ms(3,2)},b:{t:"조용히 묵묵히 쌓아간다",s:ms(3,0)}},
+  {dim:3,q:"내 에너지 스타일은",a:{t:"폭발적으로 쏟아붓고 쉰다",s:ms(3,2)},b:{t:"꾸준히 일정하게 유지한다",s:ms(3,0)}},
+  {dim:3,q:"칭찬을 받으면",a:{t:"기쁨이 바로 얼굴에 드러난다",s:ms(3,2)},b:{t:"기쁘지만 겉으로 잘 드러내지 않는다",s:ms(3,0)}},
+  {dim:4,q:"나는 유행에 대해",a:{t:"관심 없다. 나만의 스타일을 고수한다",s:ms(4,2)},b:{t:"관심 있다. 트렌드를 따라가는 게 즐겁다",s:ms(4,0)}},
+  {dim:4,q:"새로운 아이디어를 낼 때",a:{t:"아무도 안 해본 것을 시도하고 싶다",s:ms(4,2)},b:{t:"검증된 방식 안에서 개선하고 싶다",s:ms(4,0)}},
+  {dim:4,q:"나를 한마디로 표현하면",a:{t:"희귀하고 독창적인 존재",s:ms(4,2)},b:{t:"보편적이고 친근한 존재",s:ms(4,0)}},
+  {dim:4,q:"인정받고 싶은 방식은",a:{t:"특별하고 독창적인 존재로 기억되는 것",s:ms(4,2)},b:{t:"믿음직하고 든든한 존재로 기억되는 것",s:ms(4,0)}},
+  {dim:4,q:"대중 취향과 내 취향이 다를 때",a:{t:"내 취향을 당당하게 밀어붙인다",s:ms(4,2)},b:{t:"대중의 취향에 맞춰보려 한다",s:ms(4,0)}},
+  {dim:5,q:"대화할 때 나는",a:{t:"상대의 감정을 먼저 읽으려 한다",s:ms(5,2)},b:{t:"내용과 논리를 중심으로 이야기한다",s:ms(5,0)}},
+  {dim:5,q:"친구가 힘들어 보일 때",a:{t:"먼저 알아채고 다가간다",s:ms(5,2)},b:{t:"직접 말해줄 때까지 기다린다",s:ms(5,0)}},
+  {dim:5,q:"팀 안에서 내 역할은",a:{t:"분위기를 연결하고 에너지를 전달한다",s:ms(5,2)},b:{t:"구조를 잡고 방향을 제시한다",s:ms(5,0)}},
+  {dim:5,q:"내 말과 행동이 주변에 미치는 영향",a:{t:"크다. 분위기를 쉽게 바꾼다",s:ms(5,2)},b:{t:"작다. 조용히 존재하는 편이다",s:ms(5,0)}},
+  {dim:5,q:"공감 능력 자가 평가",a:{t:"높다. 상대방 입장이 쉽게 느껴진다",s:ms(5,2)},b:{t:"낮다. 논리적으로 이해하는 게 더 편하다",s:ms(5,0)}},
+  {dim:6,q:"한번 정한 원칙은",a:{t:"어떤 상황에서도 지킨다",s:ms(6,2)},b:{t:"상황에 따라 유연하게 바꿀 수 있다",s:ms(6,0)}},
+  {dim:6,q:"타협에 대한 나의 생각",a:{t:"원칙이 타협보다 중요하다",s:ms(6,2)},b:{t:"타협은 약함이 아니라 지혜다",s:ms(6,0)}},
+  {dim:6,q:"의사결정 방식은",a:{t:"충분히 분석하고 신중하게 결정한다",s:ms(6,2)},b:{t:"빠르게 직관으로 결정한다",s:ms(6,0)}},
+  {dim:6,q:"변화에 대한 나의 태도",a:{t:"변화보다 안정이 더 좋다",s:ms(6,2)},b:{t:"변화를 즐기고 새것을 환영한다",s:ms(6,0)}},
+  {dim:6,q:"갈등 상황에서 나는",a:{t:"원칙대로 끝까지 간다",s:ms(6,2)},b:{t:"관계를 위해 양보한다",s:ms(6,0)}},
+];
+
+const ELEMENTS=[
+  {sym:"H",num:1,kor:"수소",eng:"Hydrogen",cat:"사교형",color:"#1D9E75",bg:"#E1F5EE",
+   tagline:"가볍지만 우주에서 가장 많은 존재",
+   desc:"어디에나 존재하고 누구와도 쉽게 어울립니다. 혼자 있을 땐 평범해 보이지만 누군가를 만나는 순간 폭발적인 에너지가 터져 나오죠. 세상에서 가장 가볍지만 태양을 태우는 연료가 바로 당신입니다.",
+   strength:"폭발적 친화력, 빠른 적응력",weakness:"혼자선 불안정, 충동적",
+   stats:{에너지:85,공감력:90,리더십:60,창의성:70,인내력:45},keyword:["초사교적","밝은에너지","순간폭발"],
+   compat:[{sym:"O",kor:"산소"},{sym:"N",kor:"질소"},{sym:"C",kor:"탄소"}],profile:[5,1,3,4,1,5,2]},
+  {sym:"Na",num:11,kor:"나트륨",eng:"Sodium",cat:"사교형",color:"#D85A30",bg:"#FAECE7",
+   tagline:"물 만나면 폭발, 어디서나 반응하는 에너자이저",
+   desc:"자극이 있으면 즉시 반응합니다. 감정이 빠르고 에너지가 넘쳐 주변을 깨우죠. 소금처럼 어디에나 필요한 존재이지만 때론 너무 격렬해서 주변을 당황시키기도 합니다.",
+   strength:"즉각적 반응력, 강한 존재감",weakness:"감정 조절 어려움, 충동적",
+   stats:{에너지:95,공감력:75,리더십:70,창의성:65,인내력:40},keyword:["폭발적에너지","즉각반응","사교왕"],
+   compat:[{sym:"K",kor:"칼륨"},{sym:"Cu",kor:"구리"},{sym:"O",kor:"산소"}],profile:[5,1,2,5,1,4,1]},
+  {sym:"Cu",num:29,kor:"구리",eng:"Copper",cat:"사교형",color:"#BA7517",bg:"#FAEEDA",
+   tagline:"에너지를 가장 잘 전달하는 연결형 커뮤니케이터",
+   desc:"전기가 통하듯 에너지와 감정을 빠르게 전달합니다. 회로 안에서 빛을 켜고 소리를 내고 세상을 움직이죠. 사람과 사람 사이를 잇는 타고난 연결자.",
+   strength:"뛰어난 전달력, 따뜻한 연결감",weakness:"지속 소모시 번아웃",
+   stats:{에너지:80,공감력:88,리더십:65,창의성:72,인내력:60},keyword:["연결","전달력","커뮤니케이터"],
+   compat:[{sym:"Au",kor:"금"},{sym:"Ag",kor:"은"},{sym:"Zn",kor:"아연"}],profile:[3,2,4,5,1,5,1]},
+  {sym:"K",num:19,kor:"칼륨",eng:"Potassium",cat:"사교형",color:"#1D9E75",bg:"#E1F5EE",
+   tagline:"신경신호를 전달하는 예민한 커뮤니케이터",
+   desc:"신경과 근육의 신호를 전달하는 핵심 이온입니다. 주변의 감정과 분위기를 빠르게 포착하고 전달하죠. 사람들 사이의 흐름을 읽는 섬세한 공감형 커뮤니케이터.",
+   strength:"예민한 공감력, 빠른 상황 파악",weakness:"자극에 너무 민감하게 반응",
+   stats:{에너지:75,공감력:92,리더십:58,창의성:68,인내력:60},keyword:["공감","신경전달","예민함"],
+   compat:[{sym:"Na",kor:"나트륨"},{sym:"Ca",kor:"칼슘"},{sym:"Cu",kor:"구리"}],profile:[4,2,4,3,1,5,2]},
+  {sym:"Ni",num:28,kor:"니켈",eng:"Nickel",cat:"사교형",color:"#639922",bg:"#EAF3DE",
+   tagline:"합금으로 더 강해지는 협력의 달인",
+   desc:"니켈은 혼자보다 다른 금속과 합쳐질 때 진가를 발휘합니다. 스테인리스, 동전, 배터리 모두 니켈이 있어야 완성되죠. 혼자가 아닌 함께할 때 가장 빛나는 협력형입니다.",
+   strength:"협력적 시너지, 결합력",weakness:"혼자선 존재감이 약함",
+   stats:{에너지:68,공감력:85,리더십:60,창의성:65,인내력:78},keyword:["협력","시너지","결합"],
+   compat:[{sym:"Fe",kor:"철"},{sym:"Cr",kor:"크로뮴"},{sym:"Cu",kor:"구리"}],profile:[2,3,5,2,2,5,2]},
+  {sym:"Sn",num:50,kor:"주석",eng:"Tin",cat:"사교형",color:"#5F5E5A",bg:"#F1EFE8",
+   tagline:"청동기를 만든 조합의 귀재, 역사를 바꾼 협력가",
+   desc:"구리와 만나 청동이 되면서 인류 역사를 바꿨습니다. 혼자선 무르지만 누군가와 합쳐지면 문명을 여는 힘이 됩니다. 좋은 파트너를 만났을 때 폭발적으로 성장하는 유형.",
+   strength:"조합 능력, 협력에서 시너지",weakness:"혼자선 의지력이 약함",
+   stats:{에너지:65,공감력:80,리더십:58,창의성:72,인내력:65},keyword:["조합","파트너십","역사를바꿈"],
+   compat:[{sym:"Cu",kor:"구리"},{sym:"Ni",kor:"니켈"},{sym:"Fe",kor:"철"}],profile:[2,2,5,3,2,4,1]},
+  {sym:"O",num:8,kor:"산소",eng:"Oxygen",cat:"안정형",color:"#1D9E75",bg:"#E1F5EE",
+   tagline:"없으면 아무것도 안 되는 조용한 필수 존재",
+   desc:"평소엔 눈에 띄지 않지만 없으면 모든 게 멈춥니다. 주인공보다 무대 자체에 가까운 존재. 당신이 있어야 다른 사람들이 빛날 수 있습니다.",
+   strength:"필수적 존재감, 넓은 포용력",weakness:"저평가받기 쉬움",
+   stats:{에너지:65,공감력:85,리더십:60,창의성:55,인내력:90},keyword:["없으면안됨","포용","생명유지"],
+   compat:[{sym:"H",kor:"수소"},{sym:"Fe",kor:"철"},{sym:"C",kor:"탄소"}],profile:[2,4,3,2,1,4,4]},
+  {sym:"Fe",num:26,kor:"철",eng:"Iron",cat:"안정형",color:"#888780",bg:"#F1EFE8",
+   tagline:"단단하고 믿음직하지만 환경에 따라 녹스는",
+   desc:"묵묵히 자기 자리를 지킵니다. 화려하지 않지만 건물의 뼈대처럼 당신 없이는 아무것도 서 있지 못합니다. 혹독한 환경에 오래 노출되면 녹슬기 시작합니다.",
+   strength:"강한 실행력, 신뢰감",weakness:"혹독한 환경에서 소진",
+   stats:{에너지:70,공감력:65,리더십:75,창의성:45,인내력:92},keyword:["묵직함","신뢰","실행력"],
+   compat:[{sym:"C",kor:"탄소"},{sym:"Ni",kor:"니켈"},{sym:"Co",kor:"코발트"}],profile:[2,5,2,2,2,2,4]},
+  {sym:"Ca",num:20,kor:"칼슘",eng:"Calcium",cat:"안정형",color:"#5F5E5A",bg:"#F1EFE8",
+   tagline:"뼈와 구조의 기반, 팀의 든든한 지지자",
+   desc:"몸의 뼈대를 만드는 칼슘처럼 당신은 조직의 구조를 지탱합니다. 화려하지 않지만 없으면 무너지는 기반. 신뢰받는 지지자로서 조용히 모든 것을 받쳐주는 유형입니다.",
+   strength:"구조적 안정감, 든든한 기반",weakness:"변화 거부 경향",
+   stats:{에너지:60,공감력:75,리더십:65,창의성:45,인내력:94},keyword:["기반","든든함","구조적안정"],
+   compat:[{sym:"P",kor:"인"},{sym:"Mg",kor:"마그네슘"},{sym:"K",kor:"칼륨"}],profile:[1,5,3,1,2,3,4]},
+  {sym:"Li",num:3,kor:"리튬",eng:"Lithium",cat:"안정형",color:"#378ADD",bg:"#E6F1FB",
+   tagline:"조용하지만 오래가는 에너지 저장소",
+   desc:"겉으로는 조용하지만 내면에 강한 에너지를 품고 있습니다. 전기차 배터리의 핵심처럼 오랫동안 묵묵히 에너지를 공급하는 지구력형입니다.",
+   strength:"지속적 에너지, 감정 안정성",weakness:"감정 폭발 시 통제 어려움",
+   stats:{에너지:70,공감력:68,리더십:60,창의성:55,인내력:90},keyword:["지구력","조용한강자","배터리"],
+   compat:[{sym:"O",kor:"산소"},{sym:"Fe",kor:"철"},{sym:"Co",kor:"코발트"}],profile:[2,4,2,2,2,3,4]},
+  {sym:"W",num:74,kor:"텅스텐",eng:"Tungsten",cat:"안정형",color:"#5F5E5A",bg:"#F1EFE8",
+   tagline:"녹는점 최고, 극한에서도 버티는 인내형",
+   desc:"모든 원소 중 녹는점이 가장 높습니다. 어떤 열도 어떤 압박도 당신을 녹이지 못합니다. 전구 필라멘트처럼 오랫동안 빛을 내는 묵묵한 인내형.",
+   strength:"극한의 인내력, 불굴의 의지",weakness:"유연성 없음",
+   stats:{에너지:65,공감력:55,리더십:72,창의성:42,인내력:99},keyword:["인내","불굴","묵묵함"],
+   compat:[{sym:"C",kor:"탄소"},{sym:"Fe",kor:"철"},{sym:"Re",kor:"레늄"}],profile:[1,5,1,1,2,1,5]},
+  {sym:"Pb",num:82,kor:"납",eng:"Lead",cat:"안정형",color:"#5F5E5A",bg:"#F1EFE8",
+   tagline:"무겁고 차폐력이 강한 든든한 방패형",
+   desc:"무겁고 방사선도 막는 차폐력을 가졌습니다. 외부의 충격과 위험으로부터 주변을 보호하는 방패형. 묵직한 존재감으로 팀을 안정시킵니다.",
+   strength:"강한 보호력, 묵직한 안정감",weakness:"움직임이 느림, 변화 적응 어려움",
+   stats:{에너지:50,공감력:65,리더십:68,창의성:38,인내력:90},keyword:["방패","보호","묵직함"],
+   compat:[{sym:"Sn",kor:"주석"},{sym:"Fe",kor:"철"},{sym:"Sb",kor:"안티모니"}],profile:[1,5,2,1,2,2,5]},
+  {sym:"Au",num:79,kor:"금",eng:"Gold",cat:"리더형",color:"#BA7517",bg:"#FAEEDA",
+   tagline:"시간이 지나도 변하지 않는 절대적 가치",
+   desc:"수천 년이 지나도 금은 금입니다. 유행에 흔들리지 않고 자신의 가치와 신념을 지키죠. 희귀하고 아름답고 변하지 않는 — 하지만 그만큼 가까이하기 어렵다는 것도 압니다.",
+   strength:"흔들리지 않는 신념, 희소가치",weakness:"유연성 부족",
+   stats:{에너지:60,공감력:65,리더십:90,창의성:55,인내력:95},keyword:["불변의가치","품격","신념"],
+   compat:[{sym:"Ag",kor:"은"},{sym:"Pt",kor:"백금"},{sym:"Cu",kor:"구리"}],profile:[1,4,1,1,5,2,5]},
+  {sym:"Ti",num:22,kor:"타이타늄",eng:"Titanium",cat:"리더형",color:"#378ADD",bg:"#E6F1FB",
+   tagline:"가볍고 강하고 녹슬지 않는 완벽한 리더",
+   desc:"강하면서도 부담스럽지 않습니다. 철보다 강하지만 훨씬 가볍고 어떤 환경에서도 녹슬지 않죠. 외과용 메스부터 항공기까지 가장 중요한 순간에 선택받는 존재.",
+   strength:"강인함, 가벼운 카리스마",weakness:"완벽해서 가까이 어려움",
+   stats:{에너지:80,공감력:60,리더십:95,창의성:65,인내력:95},keyword:["최강내구성","완벽한리더","일관성"],
+   compat:[{sym:"Fe",kor:"철"},{sym:"C",kor:"탄소"},{sym:"Al",kor:"알루미늄"}],profile:[3,4,2,3,4,2,5]},
+  {sym:"Pt",num:78,kor:"백금",eng:"Platinum",cat:"리더형",color:"#5F5E5A",bg:"#F1EFE8",
+   tagline:"금보다 희귀하고 더 안정적인 완벽주의자",
+   desc:"어떤 산에도 녹지 않고 어떤 유행에도 흔들리지 않죠. 기준이 명확하고 타협하지 않는 당신은 존재만으로도 신뢰를 줍니다.",
+   strength:"절대적 신뢰감, 흔들리지 않는 원칙",weakness:"기준 높아 관계에서 벽 생김",
+   stats:{에너지:55,공감력:60,리더십:92,창의성:60,인내력:98},keyword:["완벽주의","원칙","절대신뢰"],
+   compat:[{sym:"Au",kor:"금"},{sym:"Ir",kor:"이리듐"},{sym:"Ag",kor:"은"}],profile:[1,5,1,1,5,1,5]},
+  {sym:"Cr",num:24,kor:"크로뮴",eng:"Chromium",cat:"리더형",color:"#D85A30",bg:"#FAECE7",
+   tagline:"빛나는 외면과 강한 내면을 가진 카리스마",
+   desc:"스테인리스 스틸의 핵심이 바로 크로뮴입니다. 녹슬지 않게 하는 건 당신의 존재 때문이죠. 표면이 빛나고 강한 내면을 가진 카리스마형.",
+   strength:"강한 카리스마, 빛나는 존재감",weakness:"자존심 강해 타협 어려움",
+   stats:{에너지:78,공감력:62,리더십:88,창의성:70,인내력:85},keyword:["카리스마","빛남","강한내면"],
+   compat:[{sym:"Fe",kor:"철"},{sym:"Ni",kor:"니켈"},{sym:"Ti",kor:"타이타늄"}],profile:[3,3,2,3,4,2,5]},
+  {sym:"Ra",num:88,kor:"라듐",eng:"Radium",cat:"에너지형",color:"#D85A30",bg:"#FAECE7",
+   tagline:"스스로 빛을 내는 개척자, 타오르는 열정",
+   desc:"어둠 속에서도 스스로 빛을 냅니다. 아무도 가지 않은 길을 개척하는 열정의 소유자. 그 빛은 때론 주변을 위험에 빠뜨리기도 하지만 세상을 바꿉니다.",
+   strength:"개척 정신, 자발적 에너지",weakness:"소진 위험",
+   stats:{에너지:96,공감력:60,리더십:82,창의성:85,인내력:75},keyword:["개척자","열정","불굴"],
+   compat:[{sym:"Ba",kor:"바륨"},{sym:"Ca",kor:"칼슘"},{sym:"Sr",kor:"스트론튬"}],profile:[5,2,1,5,4,2,2]},
+  {sym:"Mg",num:12,kor:"마그네슘",eng:"Magnesium",cat:"에너지형",color:"#BA7517",bg:"#FAEEDA",
+   tagline:"불 붙으면 눈부시게 빛나는 무대형 퍼포머",
+   desc:"평소엔 조용하지만 일단 불이 붙으면 누구도 눈을 뗄 수 없습니다. 섬광처럼 강렬하게 빛나고 그 순간만큼은 모든 주목을 받죠.",
+   strength:"강렬한 존재감, 폭발적 에너지",weakness:"지속성 부족, 에너지 소진 빠름",
+   stats:{에너지:92,공감력:65,리더십:68,창의성:78,인내력:50},keyword:["섬광","무대형","퍼포머"],
+   compat:[{sym:"O",kor:"산소"},{sym:"Ca",kor:"칼슘"},{sym:"Fe",kor:"철"}],profile:[4,2,2,5,2,2,1]},
+  {sym:"Ag",num:47,kor:"은",eng:"Silver",cat:"에너지형",color:"#888780",bg:"#F1EFE8",
+   tagline:"전도율 1위, 빛을 가장 잘 반사하는 퍼포머",
+   desc:"전도율이 금보다 높고 빛 반사율도 최고입니다. 재능을 드러내는 데 거리낌이 없고 자신이 가진 것을 최대한 발휘하는 유형. 관리하지 않으면 산화됩니다.",
+   strength:"뛰어난 표현력, 반짝이는 존재감",weakness:"관리 소홀하면 번아웃",
+   stats:{에너지:88,공감력:70,리더십:72,창의성:80,인내력:65},keyword:["퍼포머","빛남","표현력"],
+   compat:[{sym:"Au",kor:"금"},{sym:"Cu",kor:"구리"},{sym:"Pt",kor:"백금"}],profile:[3,2,2,5,3,3,2]},
+  {sym:"Xe",num:54,kor:"제논",eng:"Xenon",cat:"에너지형",color:"#7F77DD",bg:"#EEEDFE",
+   tagline:"순간적으로 강렬히 빛나는 임팩트형",
+   desc:"고귀한 기체지만 전기를 흘리면 눈부신 섬광을 냅니다. 평소엔 조용하지만 순간적으로 강렬하게 존재감을 폭발시키는 유형. 카메라 플래시처럼 결정적인 순간에 가장 빛납니다.",
+   strength:"강렬한 임팩트, 결정적 순간의 존재감",weakness:"평소엔 주목받지 못함",
+   stats:{에너지:82,공감력:55,리더십:65,창의성:75,인내력:70},keyword:["임팩트","섬광","결정적순간"],
+   compat:[{sym:"He",kor:"헬륨"},{sym:"Ne",kor:"네온"},{sym:"Kr",kor:"크립톤"}],profile:[4,3,1,5,4,1,2]},
+  {sym:"C",num:6,kor:"탄소",eng:"Carbon",cat:"창의형",color:"#D4537E",bg:"#FBEAF0",
+   tagline:"다이아몬드도 되고 흑연도 되는 무한 변신자",
+   desc:"같은 원소인데 구성 방식에 따라 다이아몬드도 되고 흑연도 됩니다. 환경에 따라 완전히 다른 면을 보여주는 진정한 멀티페르소나. 생명 자체가 당신 위에 쓰여 있습니다.",
+   strength:"무한한 변신력, 창의적 재조합",weakness:"정체성 혼란",
+   stats:{에너지:75,공감력:70,리더십:65,창의성:98,인내력:80},keyword:["다재다능","변신","창의성"],
+   compat:[{sym:"H",kor:"수소"},{sym:"O",kor:"산소"},{sym:"N",kor:"질소"}],profile:[4,2,3,4,4,3,1]},
+  {sym:"Se",num:34,kor:"셀레늄",eng:"Selenium",cat:"창의형",color:"#D4537E",bg:"#FBEAF0",
+   tagline:"빛에 반응하는 감수성 넘치는 예술가",
+   desc:"빛의 세기에 따라 전기전도성이 변하는 광전도체. 빛과 어둠, 감정의 변화에 예민하게 반응하는 예술가형입니다.",
+   strength:"예민한 감수성, 창의적 영감",weakness:"감정 기복이 큼",
+   stats:{에너지:65,공감력:85,리더십:48,창의성:95,인내력:55},keyword:["감수성","예술가","창의적영감"],
+   compat:[{sym:"Zn",kor:"아연"},{sym:"S",kor:"황"},{sym:"Te",kor:"텔루륨"}],profile:[3,2,2,4,4,4,1]},
+  {sym:"Hg",num:80,kor:"수은",eng:"Mercury",cat:"창의형",color:"#D85A30",bg:"#FAECE7",
+   tagline:"상온에서 흐르는 유일한 금속, 자유로운 유목민",
+   desc:"상온에서 액체인 유일한 금속. 정해진 형태가 없고 어디든 흘러갑니다. 한 곳에 머무르지 않고 끊임없이 새로운 것을 찾아 움직이는 자유로운 유목민형.",
+   strength:"자유로운 사고, 고정관념 탈피",weakness:"한 곳에 정착 어려움",
+   stats:{에너지:80,공감력:65,리더십:55,창의성:90,인내력:45},keyword:["자유","유목민","고정관념파괴"],
+   compat:[{sym:"Au",kor:"금"},{sym:"Ag",kor:"은"},{sym:"S",kor:"황"}],profile:[4,1,2,4,5,2,1]},
+  {sym:"Ge",num:32,kor:"저마늄",eng:"Germanium",cat:"창의형",color:"#7F77DD",bg:"#EEEDFE",
+   tagline:"금속도 비금속도 아닌 경계에서 다리를 놓는 매개자",
+   desc:"저마늄은 금속과 비금속의 경계에 있는 반도체입니다. 어느 한 쪽에 속하지 않고 서로 다른 세계 사이에서 다리를 놓습니다. 양쪽의 언어를 모두 구사하는 희귀한 매개형.",
+   strength:"경계를 넘나드는 유연성, 중재력",weakness:"어느 쪽에도 완전히 속하지 못하는 소외감",
+   stats:{에너지:62,공감력:80,리더십:58,창의성:88,인내력:70},keyword:["경계인","매개자","중재"],
+   compat:[{sym:"Si",kor:"규소"},{sym:"C",kor:"탄소"},{sym:"As",kor:"비소"}],profile:[3,2,3,3,4,4,2]},
+  {sym:"Si",num:14,kor:"규소",eng:"Silicon",cat:"분석형",color:"#378ADD",bg:"#E6F1FB",
+   tagline:"모래에서 반도체까지 가능성을 품은 혁신가",
+   desc:"평범해 보이지만 그 안에 무한한 가능성이 있습니다. 데이터와 논리로 세상을 바꾸는 분석형 혁신가.",
+   strength:"논리적 사고, 혁신적 문제해결",weakness:"감정 표현 서투름",
+   stats:{에너지:65,공감력:55,리더십:70,창의성:85,인내력:80},keyword:["분석","혁신","잠재력"],
+   compat:[{sym:"O",kor:"산소"},{sym:"C",kor:"탄소"},{sym:"N",kor:"질소"}],profile:[2,4,2,2,4,2,4]},
+  {sym:"Co",num:27,kor:"코발트",eng:"Cobalt",cat:"분석형",color:"#378ADD",bg:"#E6F1FB",
+   tagline:"깊은 파란색과 배터리의 핵심, 신뢰받는 조력자",
+   desc:"배터리의 핵심이자 깊고 아름다운 파란색을 만드는 원소. 화려한 주인공보다 신뢰받는 조력자를 택합니다. 깊이 있는 지식과 차분한 태도로 주변을 안정시키는 유형.",
+   strength:"깊은 전문성, 차분한 신뢰감",weakness:"주목받길 피해 과소평가될 수 있음",
+   stats:{에너지:60,공감력:78,리더십:62,창의성:68,인내력:88},keyword:["신뢰","조력자","깊이있음"],
+   compat:[{sym:"Fe",kor:"철"},{sym:"Ni",kor:"니켈"},{sym:"Li",kor:"리튬"}],profile:[2,4,3,2,3,3,4]},
+  {sym:"I",num:53,kor:"아이오딘",eng:"Iodine",cat:"분석형",color:"#7F77DD",bg:"#EEEDFE",
+   tagline:"갑상선 호르몬의 핵심, 조용한 컨트롤러",
+   desc:"갑상선 호르몬을 만드는 필수 원소로 신체의 대사와 성장을 총괄합니다. 뒤에서 조용히 전체 흐름을 조율하는 컨트롤러형.",
+   strength:"전체 흐름 조율, 조용한 통제력",weakness:"존재감이 드러나지 않아 외로움",
+   stats:{에너지:60,공감력:65,리더십:75,창의성:62,인내력:85},keyword:["컨트롤러","조율","대사조절"],
+   compat:[{sym:"Na",kor:"나트륨"},{sym:"K",kor:"칼륨"},{sym:"Se",kor:"셀레늄"}],profile:[2,4,2,2,3,2,4]},
+  {sym:"He",num:2,kor:"헬륨",eng:"Helium",cat:"독립형",color:"#7F77DD",bg:"#EEEDFE",
+   tagline:"혼자서도 완전한, 누구도 건드릴 수 없는",
+   desc:"어떤 자극에도 반응하지 않고 자신의 궤도를 유지합니다. 파티에 있어도 혼자이고 혼자 있어도 행복하죠. 가장 가벼우면서 가장 안정된 불활성의 철학자.",
+   strength:"완벽한 자기완결성",weakness:"타인과 연결이 어려움",
+   stats:{에너지:50,공감력:40,리더십:55,창의성:65,인내력:95},keyword:["완전한독립","고고함","자기완결"],
+   compat:[{sym:"Ne",kor:"네온"},{sym:"Ar",kor:"아르곤"},{sym:"Xe",kor:"제논"}],profile:[1,5,1,1,5,1,4]},
+  {sym:"Ir",num:77,kor:"이리듐",eng:"Iridium",cat:"독립형",color:"#1D9E75",bg:"#E1F5EE",
+   tagline:"지구상 가장 내식성 강한, 초연한 철학자",
+   desc:"지구상에서 가장 부식에 강한 금속입니다. 산, 알칼리, 고온 — 어떤 것도 당신을 변화시키지 못합니다. 세상의 흐름과 거리를 두고 자신만의 원칙으로 사는 초연한 철학자형.",
+   strength:"절대적 자아 유지, 원칙",weakness:"변화에 지나치게 저항, 고립 위험",
+   stats:{에너지:52,공감력:48,리더십:68,창의성:60,인내력:98},keyword:["초연함","철학자","불변"],
+   compat:[{sym:"Pt",kor:"백금"},{sym:"Os",kor:"오스뮴"},{sym:"Ru",kor:"루테늄"}],profile:[1,5,1,1,4,1,5]},
+  {sym:"Zn",num:30,kor:"아연",eng:"Zinc",cat:"안정형",color:"#1D9E75",bg:"#E1F5EE",
+   tagline:"면역과 치유를 조용히 돕는 힐러",
+   desc:"아연은 면역계와 상처 치유의 핵심입니다. 아프고 지친 사람 곁에서 조용히 회복을 돕는 힐러형. 당신 덕분에 사람들이 다시 일어설 수 있습니다.",
+   strength:"치유력, 조용한 공감",weakness:"자신을 돌보지 못하는 경향",
+   stats:{에너지:58,공감력:90,리더십:52,창의성:55,인내력:82},keyword:["힐러","치유","조용한공감"],
+   compat:[{sym:"Cu",kor:"구리"},{sym:"Mg",kor:"마그네슘"},{sym:"Se",kor:"셀레늄"}],profile:[1,3,4,1,1,5,3]},
+  {sym:"N",num:7,kor:"질소",eng:"Nitrogen",cat:"안정형",color:"#888780",bg:"#F1EFE8",
+   tagline:"공기의 78%지만 눈에 안 띄는 縁의 존재",
+   desc:"공기의 78%를 차지하지만 아무도 당신을 의식하지 않습니다. 소란 없이 기반을 지탱하고 없어지면 그때서야 중요함을 깨닫게 되는 진짜 縁의 존재.",
+   strength:"조용한 지지력, 안정성",weakness:"인정받기 어려움",
+   stats:{에너지:55,공감력:72,리더십:50,창의성:48,인내력:92},keyword:["縁의존재","조용한지지","기반"],
+   compat:[{sym:"O",kor:"산소"},{sym:"H",kor:"수소"},{sym:"C",kor:"탄소"}],profile:[1,4,3,1,2,4,4]},
+  {sym:"Ba",num:56,kor:"바륨",eng:"Barium",cat:"안정형",color:"#639922",bg:"#EAF3DE",
+   tagline:"불꽃반응에서 초록빛, 무대 뒤의 서포터",
+   desc:"불꽃반응에서 아름다운 초록빛을 냅니다. 화려한 쇼 뒤에서 모든 것을 준비하는 서포터형. 당신이 있어야 무대가 완성됩니다.",
+   strength:"든든한 지원, 꼼꼼함",weakness:"공을 인정받지 못하는 경우 많음",
+   stats:{에너지:62,공감력:80,리더십:55,창의성:58,인내력:85},keyword:["서포터","무대뒤","초록빛"],
+   compat:[{sym:"O",kor:"산소"},{sym:"S",kor:"황"},{sym:"Ca",kor:"칼슘"}],profile:[2,4,3,2,2,4,3]},
+  {sym:"Al",num:13,kor:"알루미늄",eng:"Aluminum",cat:"창의형",color:"#888780",bg:"#F1EFE8",
+   tagline:"가볍고 실용적인 어디에나 쓰이는 팔방미인",
+   desc:"가볍고 단단하고 어디에나 쓰입니다. 포일도 되고 비행기도 되고 캔도 되죠. 화려하진 않지만 실용적이고 적응력이 높은 팔방미인. 주어진 환경에서 최선을 다하는 유형.",
+   strength:"높은 적응력, 실용성",weakness:"존재감이 약해 보일 수 있음",
+   stats:{에너지:70,공감력:72,리더십:58,창의성:80,인내력:75},keyword:["팔방미인","적응력","실용적"],
+   compat:[{sym:"Ti",kor:"타이타늄"},{sym:"Fe",kor:"철"},{sym:"Cu",kor:"구리"}],profile:[3,3,4,3,2,3,2]},
+  {sym:"S",num:16,kor:"황",eng:"Sulfur",cat:"에너지형",color:"#BA7517",bg:"#FAEEDA",
+   tagline:"화산과 생명 모두에 존재하는 극한 생존자",
+   desc:"화산 지옥 같은 환경에서도 살아남고 생명체의 단백질에도 존재합니다. 극단적인 상황에서도 살아남는 강인한 생존자. 독하다는 말을 들을 수 있지만 그건 당신의 생존 본능입니다.",
+   strength:"강한 생존력, 극한 환경 적응",weakness:"독한 이미지, 관계에서 거리감",
+   stats:{에너지:85,공감력:50,리더십:65,창의성:60,인내력:95},keyword:["생존자","극한적응","강인함"],
+   compat:[{sym:"Fe",kor:"철"},{sym:"Cu",kor:"구리"},{sym:"Zn",kor:"아연"}],profile:[5,3,1,4,3,1,2]},
+  {sym:"P",num:15,kor:"인",eng:"Phosphorus",cat:"안정형",color:"#639922",bg:"#EAF3DE",
+   tagline:"생명의 에너지 ATP, 보이지 않는 동력원",
+   desc:"세포의 에너지 화폐인 ATP의 핵심 성분입니다. 무대 뒤에서 모든 것을 가동시키는 縁의 동력원. 눈에 띄지 않지만 당신이 없으면 아무것도 움직이지 않습니다.",
+   strength:"조용한 실행력, 지속적 에너지 공급",weakness:"공을 인정받지 못하는 경우 많음",
+   stats:{에너지:72,공감력:68,리더십:55,창의성:60,인내력:88},keyword:["縁의동력원","에너지공급","실행"],
+   compat:[{sym:"O",kor:"산소"},{sym:"N",kor:"질소"},{sym:"Ca",kor:"칼슘"}],profile:[2,3,3,2,2,4,3]},
+];
+
+let scores=[0,0,0,0,0,0,0];
+let current=0;
+const app=document.getElementById('app');
+const MAX=10,MIN=0;
+
+function normalize(sc){return sc.map(v=>1+((v-MIN)/(MAX-MIN))*4);}
+
+function getResult(){
+  const norm=normalize(scores);
+  let best=null,bestScore=-Infinity;
+  ELEMENTS.forEach(e=>{
+    let score=0;
+    e.profile.forEach((v,i)=>score-=Math.abs(v-norm[i]));
+    if(score>bestScore){bestScore=score;best=e;}
+  });
+  return best;
+}
+
+function render(){
+  if(current>=QS.length){showResult();return;}
+  const q=QS[current];
+  const dimIdx=q.dim;
+  const dimsDone=Array.from(new Set(QS.slice(0,current).map(x=>x.dim)));
+  const pct=Math.round((current/QS.length)*100);
+  const pips=DIMS.map((d,i)=>{
+    let cls='dim-chip';
+    if(dimsDone.includes(i))cls+=' done';
+    if(i===dimIdx)cls+=' active';
+    return `<span class="${cls}">${d}</span>`;
+  }).join('');
+  app.innerHTML=`
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+      <div class="progress-text">${current} / ${QS.length}</div>
+    </div>
+    <div class="dim-chips">${pips}</div>
+    <div class="dim-label">${DIMS[dimIdx]} — ${DIM_DESC[dimIdx]}</div>
+    <div class="q-num">Q${current+1}</div>
+    <div class="q-text">${q.q}</div>
+    <button class="choice" data-choice="a"><span class="opt-label">A</span>${q.a.t}</button>
+    <button class="choice" data-choice="b"><span class="opt-label">B</span>${q.b.t}</button>`;
+  app.querySelectorAll('.choice').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const s=btn.dataset.choice==='a'?q.a.s:q.b.s;
+      s.forEach((v,i)=>scores[i]+=v);
+      current++;render();
+    });
+  });
+}
+
+function showResult(){
+  const e=getResult();
+  const bars=Object.entries(e.stats).map(([k,v])=>`
+    <div class="bar-wrap">
+      <div class="bar-label-row"><span>${k}</span><span>${v}</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${v}%;background:${e.color}"></div></div>
+    </div>`).join('');
+  const tags=e.keyword.map(t=>`<span class="tag">${t}</span>`).join('');
+  const compat=e.compat.map(x=>`
+    <div class="compat-item">
+      <div class="compat-sym" style="color:${e.color}">${x.sym}</div>
+      <div class="compat-name">${x.kor}</div>
+    </div>`).join('');
+  app.innerHTML=`
+    <div class="result-header">
+      <div class="result-sym" style="color:${e.color}">${e.sym}</div>
+      <div class="result-num">원자번호 ${e.num}</div>
+      <div class="result-name">${e.kor}</div>
+      <div class="result-eng">${e.eng}</div>
+      <span class="cat-badge" style="background:${e.bg};color:${e.color}">${e.cat}</span>
+    </div>
+    <div class="result-tagline">"${e.tagline}"</div>
+    <div class="result-desc">${e.desc}</div>
+    <div class="sw-grid">
+      <div class="sw-box"><div class="sw-label">강점</div><div class="sw-val">${e.strength}</div></div>
+      <div class="sw-box"><div class="sw-label">주의점</div><div class="sw-val">${e.weakness}</div></div>
+    </div>
+    <div class="section-title">성향 지표</div>
+    <div style="margin-bottom:20px">${bars}</div>
+    <div class="section-title">나를 표현하는 키워드</div>
+    <div class="tags">${tags}</div>
+    <div class="section-title" style="margin-top:16px">잘 맞는 원소 (궁합)</div>
+    <div class="compat-row">${compat}</div>
+    <a href="https://forms.gle/7bqDNE44MZdXAJWF9" target="_blank" style="display:block;width:100%;padding:14px;border-radius:12px;border:1.5px solid ${e.color};background:${e.bg};cursor:pointer;font-size:14px;color:${e.color};font-weight:500;text-align:center;text-decoration:none;margin-bottom:10px;font-family:inherit">⚛ 설문 참여하기 (1분)</a>
+    <button class="retry-btn" id="retry">↩ 다시 테스트하기</button>
+    <div class="share-hint">이 파일을 카카오톡으로 보내면<br>친구도 바로 테스트할 수 있어요</div>`;
+  document.getElementById('retry').addEventListener('click',()=>{
+    scores=[0,0,0,0,0,0,0];current=0;render();
+  });
+}
+render();
+</script>
+</body>
+</html>
