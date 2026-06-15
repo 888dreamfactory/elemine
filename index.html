@@ -65,7 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Ne
     <div class="header-sub">당신은 금처럼 변하지 않는 사람인가요, 수소처럼 폭발적인 사람인가요?<br>35개의 질문으로 알아보는 나의 원소 성격 유형<br>A 또는 B를 선택하면서 원소로 나를 발견해보세요.</div>
   </div>
   <div class="card" id="app"></div>
-  <div class="footer">⚛ ELEMINE · All rights reserved by Elemine · elemine.me</div>
+  <div class="footer">⚛ ELEMINE &nbsp;·&nbsp; All rights reserved by Elemine &nbsp;·&nbsp; elemine.me</div>
 </div>
 <script>
 const DIMS=['반응성','안정성','결합성','에너지방향','희소성','전도성','경도'];
@@ -376,7 +376,15 @@ function render(){
 
 function showResult(){
   const e=getResult();
-  const bars=Object.entries(e.stats).map(([k,v])=>`
+    const norm=normalize(scores);
+  const pStats={
+    에너지: Math.min(99,Math.max(30,Math.round(((norm[0]+norm[3])/2/5)*100))),
+    공감력: Math.min(99,Math.max(30,Math.round((norm[5]/5)*100))),
+    리더십: Math.min(99,Math.max(30,Math.round(((norm[4]+norm[6])/2/5)*100))),
+    창의성: Math.min(99,Math.max(30,Math.round(((norm[4]+norm[0])/2/5)*100))),
+    인내력: Math.min(99,Math.max(30,Math.round(((norm[1]+norm[6])/2/5)*100))),
+  };
+  const bars=Object.entries(pStats).map(([k,v])=>`
     <div class="bar-wrap">
       <div class="bar-label-row"><span>${k}</span><span>${v}</span></div>
       <div class="bar-bg"><div class="bar-fill" style="width:${v}%;background:${e.color}"></div></div>
