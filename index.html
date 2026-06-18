@@ -380,12 +380,16 @@ function showGuide(){
     html+=`</div></div>`;
   });
 
-  html+=`<button class="retry-btn" id="back-to-result" style="margin-top:8px">← 내 결과로 돌아가기</button>
-         <button class="retry-btn" id="retry-from-guide" style="margin-top:4px">↩ 다시 테스트하기</button>`;
+  const hasResult = current >= QS.length;
+  const backToResultBtn = hasResult ? `<button class="retry-btn" id="back-to-result" style="margin-top:8px">← 내 결과로 돌아가기</button>` : '';
+  html+=`${backToResultBtn}
+         <button class="retry-btn" id="retry-from-guide" style="margin-top:4px">↩ 테스트 시작하기</button>`;
 
   app.innerHTML=html;
 
-  document.getElementById('back-to-result').addEventListener('click',()=>showResult());
+  if(hasResult){
+    document.getElementById('back-to-result').addEventListener('click',()=>showResult());
+  }
   document.getElementById('retry-from-guide').addEventListener('click',()=>{
     scores=[0,0,0,0,0,0,0];current=0;history=[];render();
   });
@@ -453,6 +457,8 @@ function render(){
     if(i===dimIdx)cls+=' active';
     return `<span class="${cls}">${d}</span>`;
   }).join('');
+  const guideButtonHtml = current === 0 ? `<button class="retry-btn" id="guide-from-start" style="margin-top:12px;font-size:12px">⚗ 원소 도감 먼저 보기</button>` : '';
+
   app.innerHTML=`
     <div class="progress-wrap">
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
@@ -463,7 +469,8 @@ function render(){
     <div class="q-num">Q${current+1}</div>
     <div class="q-text">${q.q}</div>
     <button class="choice" data-choice="a"><span class="opt-label">A</span>${q.a.t}</button>
-    <button class="choice" data-choice="b"><span class="opt-label">B</span>${q.b.t}</button>`;
+    <button class="choice" data-choice="b"><span class="opt-label">B</span>${q.b.t}</button>
+    ${guideButtonHtml}`;
   const backBtn = current > 0 ? `<button class="back-btn" id="back-btn">← 이전 문항으로</button>` : '';
   app.innerHTML += backBtn;
 
@@ -490,6 +497,11 @@ function render(){
       current=prev.current;
       render();
     });
+  }
+
+  const guideFromStart = document.getElementById('guide-from-start');
+  if(guideFromStart){
+    guideFromStart.addEventListener('click',()=>showGuide());
   }
 }
 
