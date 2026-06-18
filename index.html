@@ -54,6 +54,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Ne
 .retry-btn{display:block;width:100%;padding:14px;border-radius:12px;border:1.5px solid #eee;background:#f8f7f4;cursor:pointer;font-size:14px;color:#888;margin-top:4px;font-family:inherit;transition:all 0.15s}
 .retry-btn:hover{background:#f0ede8;color:#555}
 .share-hint{text-align:center;font-size:12px;color:#bbb;margin-top:16px;line-height:1.6}
+.back-btn{display:block;width:100%;padding:10px;border-radius:12px;border:1.5px solid #eee;background:#fff;cursor:pointer;font-size:13px;color:#bbb;margin-top:8px;font-family:inherit;transition:all 0.15s;text-align:center}
+.back-btn:hover{background:#f8f7f4;color:#888}
 .footer{text-align:center;font-size:12px;color:#ccc;padding:20px 0 8px}
 </style>
 </head>
@@ -62,7 +64,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Ne
   <div class="header">
     <div class="header-icon">⚛</div>
     <div class="header-title">나는 어떤 원소일까?</div>
-    <div class="header-sub">당신은 금처럼 변하지 않는 사람인가요, 수소처럼 폭발적인 사람인가요?<br>35개의 질문으로 알아보는 나의 원소 성격 유형<br>A 또는 B를 선택하면서 원소로 나를 발견해보세요.</div>
+    <div class="header-sub">당신은 금처럼 변하지 않는 사람인가요, 수소처럼 폭발적인 사람인가요?<br>원소로 나를 발견해보세요.</div>
   </div>
   <div class="card" id="app"></div>
   <div class="footer">⚛ ELEMINE &nbsp;·&nbsp; All rights reserved by Elemine &nbsp;·&nbsp; elemine.me</div>
@@ -325,6 +327,7 @@ const ELEMENTS=[
 ];
 
 let scores=[0,0,0,0,0,0,0];
+let history=[];
 let current=0;
 const app=document.getElementById('app');
 const MAX=10,MIN=0;
@@ -365,13 +368,33 @@ function render(){
     <div class="q-text">${q.q}</div>
     <button class="choice" data-choice="a"><span class="opt-label">A</span>${q.a.t}</button>
     <button class="choice" data-choice="b"><span class="opt-label">B</span>${q.b.t}</button>`;
+  const backBtn = current > 0 ? `<button class="back-btn" id="back-btn">← 이전 문항으로</button>` : '';
+  app.innerHTML += backBtn;
+
+  let clicking=false;
   app.querySelectorAll('.choice').forEach(btn=>{
     btn.addEventListener('click',()=>{
+      if(clicking) return;
+      clicking=true;
+      app.querySelectorAll('.choice').forEach(b=>b.style.opacity='0.5');
       const s=btn.dataset.choice==='a'?q.a.s:q.b.s;
+      history.push({scores:[...scores],current});
       s.forEach((v,i)=>scores[i]+=v);
-      current++;render();
+      current++;
+      setTimeout(()=>{clicking=false;render();},300);
     });
   });
+
+  const backBtnEl = document.getElementById('back-btn');
+  if(backBtnEl){
+    backBtnEl.addEventListener('click',()=>{
+      if(history.length===0) return;
+      const prev=history.pop();
+      scores=[...prev.scores];
+      current=prev.current;
+      render();
+    });
+  }
 }
 
 function showResult(){
