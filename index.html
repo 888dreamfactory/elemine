@@ -355,6 +355,112 @@ function getResult(){
 }
 
 
+
+function saveResultImage(sym, kor, color, bg, cat, tagline, animal, strength, weakness) {
+  const canvas = document.createElement('canvas');
+  const size = 1080;
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  // 배경
+  ctx.fillStyle = bg || '#f5f4ef';
+  ctx.roundRect(0, 0, size, size, 60);
+  ctx.fill();
+
+  // 상단 원형 장식
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.08;
+  ctx.beginPath();
+  ctx.arc(size - 80, 80, 200, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(80, size - 80, 150, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // 동물 이모지
+  ctx.font = '180px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(animal, size / 2, 280);
+
+  // 원소 기호
+  ctx.font = 'bold 160px Georgia, serif';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText(sym, size / 2, 460);
+
+  // 한글 이름
+  ctx.font = '500 52px -apple-system, sans-serif';
+  ctx.fillStyle = '#1a1a1a';
+  ctx.textAlign = 'center';
+  ctx.fillText(kor, size / 2, 540);
+
+  // 카테고리 뱃지 배경
+  const badgeW = 180, badgeH = 52, badgeX = (size - badgeW) / 2, badgeY = 570;
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.15;
+  ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 26);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.font = '500 28px -apple-system, sans-serif';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText(cat, size / 2, badgeY + 36);
+
+  // 구분선
+  ctx.strokeStyle = color;
+  ctx.globalAlpha = 0.2;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(120, 650);
+  ctx.lineTo(size - 120, 650);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // 태그라인 (줄바꿈 처리)
+  ctx.font = '32px -apple-system, sans-serif';
+  ctx.fillStyle = '#555555';
+  ctx.textAlign = 'center';
+  const words = tagline.split(' ');
+  let line = '', lines = [], maxW = 800;
+  words.forEach(word => {
+    const test = line + (line ? ' ' : '') + word;
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = test;
+    }
+  });
+  lines.push(line);
+  lines.forEach((l, i) => ctx.fillText(l, size / 2, 710 + i * 48));
+
+  // 강점
+  const swY = lines.length > 1 ? 830 : 790;
+  ctx.font = 'bold 26px -apple-system, sans-serif';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText('강점', size / 2, swY);
+  ctx.font = '24px -apple-system, sans-serif';
+  ctx.fillStyle = '#444444';
+  ctx.fillText(strength.length > 20 ? strength.substring(0, 20) + '...' : strength, size / 2, swY + 38);
+
+  // 하단 브랜드
+  ctx.font = '26px -apple-system, sans-serif';
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.6;
+  ctx.textAlign = 'center';
+  ctx.fillText('⚛ ELEMINE · elemine.me', size / 2, 1030);
+  ctx.globalAlpha = 1;
+
+  // 저장
+  const link = document.createElement('a');
+  link.download = 'elemine_' + sym + '_' + kor + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
 function showGuide(){
   const cats=['사교형','안정형','에너지형','창의형','분석형','리더형','독립형'];
   const catColors={'사교형':'#1D9E75','안정형':'#888780','에너지형':'#D85A30','창의형':'#D4537E','분석형':'#378ADD','리더형':'#BA7517','독립형':'#7F77DD'};
@@ -565,6 +671,8 @@ function showResult(){
     <div class="section-title" style="margin-top:16px">잘 맞는 원소 (궁합)</div>
     <div class="compat-row">${compat}</div>
     <a href="https://forms.gle/7bqDNE44MZdXAJWF9" target="_blank" style="display:block;width:100%;padding:14px;border-radius:12px;border:1.5px solid ${e.color};background:${e.bg};cursor:pointer;font-size:14px;color:${e.color};font-weight:500;text-align:center;text-decoration:none;margin-bottom:10px;font-family:inherit">⚛ 설문 참여하기 (1분)</a>
+    <button onclick="saveResultImage('${e.sym}','${e.kor}','${e.color}','${e.bg}','${e.cat}','${e.tagline}','${ANIMALS[e.sym]||''}','${e.strength}','${e.weakness}')" style="display:block;width:100%;padding:14px;border-radius:12px;border:1.5px solid ${e.color};background:${e.bg};cursor:pointer;font-size:14px;color:${e.color};font-weight:500;text-align:center;margin-bottom:10px;font-family:inherit">📱 결과 이미지 저장하기</button>
+    <a href="https://forms.gle/7bqDNE44MZdXAJWF9" target="_blank" style="display:block;width:100%;padding:12px;border-radius:12px;border:1.5px solid #eee;background:#f8f7f4;cursor:pointer;font-size:13px;color:#888;font-weight:500;text-align:center;text-decoration:none;margin-bottom:10px;font-family:inherit">⚛ 설문 참여하기 (1분)</a>
     <button class="retry-btn" id="guide-btn" style="background:#f0ede8;color:#555;margin-bottom:0">⚗ 원소 도감 보기</button>
     <button class="retry-btn" id="retry">↩ 다시 테스트하기</button>
     <div class="share-hint">이 파일을 카카오톡으로 보내면<br>친구도 바로 테스트할 수 있어요</div>`;
