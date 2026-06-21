@@ -113,6 +113,15 @@ const QS=[
   {dim:6,q:"갈등 상황에서 나는",a:{t:"원칙대로 끝까지 간다",s:ms(6,2)},b:{t:"관계를 위해 양보한다",s:ms(6,0)}},
 ];
 
+
+const ANIMALS={
+  "H":"🐬","He":"🦦","Li":"🐢","C":"🦋","N":"🦫","O":"🐋",
+  "Na":"🦊","Mg":"🦚","Al":"🦜","Si":"🦉","P":"🐝","S":"🐆",
+  "K":"🐟","Ca":"🐘","Ti":"🦅","Cr":"🐯","Fe":"🐂","Co":"🦈",
+  "Ni":"🐧","Cu":"🐶","Zn":"🦔","Ge":"🦝","Se":"🦎","Ag":"🦢",
+  "Sn":"🦙","I":"🦇","Xe":"🐙","Ba":"🐿️","W":"🐊","Ir":"🐈‍⬛",
+  "Pt":"🦬","Au":"🦁","Hg":"🐠","Pb":"🦛","Ra":"🔥"
+};
 const ELEMENTS=[
   {sym:"H",num:1,kor:"수소",eng:"Hydrogen",cat:"사교형",color:"#1D9E75",bg:"#E1F5EE",
    tagline:"가볍지만 우주에서 가장 많은 존재",
@@ -420,7 +429,10 @@ function showElementDetail(sym){
 
   app.innerHTML=`
     <div class="result-header">
-      <div class="result-sym" style="color:${e.color}">${e.sym}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:4px">
+        <div class="result-sym" style="color:${e.color};margin-bottom:0">${e.sym}</div>
+        <div style="font-size:64px;line-height:1">${ANIMALS[e.sym]||''}</div>
+      </div>
       <div class="result-num">원자번호 ${e.num}</div>
       <div class="result-name">${e.kor}</div>
       <div class="result-eng">${e.eng}</div>
@@ -528,7 +540,10 @@ function showResult(){
     </div>`).join('');
   app.innerHTML=`
     <div class="result-header">
-      <div class="result-sym" style="color:${e.color}">${e.sym}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:4px">
+        <div class="result-sym" style="color:${e.color};margin-bottom:0">${e.sym}</div>
+        <div style="font-size:64px;line-height:1">${ANIMALS[e.sym]||''}</div>
+      </div>
       <div class="result-num">원자번호 ${e.num}</div>
       <div class="result-name">${e.kor}</div>
       <div class="result-eng">${e.eng}</div>
